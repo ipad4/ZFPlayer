@@ -418,8 +418,10 @@ static NSMutableDictionary <NSString* ,NSNumber *> *_zfPlayRecords;
         @zf_weakify(self)
         [self.orientationObserver enterFullScreen:NO animated:NO completion:^{
             @zf_strongify(self)
-            [self.currentPlayerManager stop];
-            [self.currentPlayerManager.view removeFromSuperview];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.currentPlayerManager stop];
+                [self.currentPlayerManager.view removeFromSuperview];
+            });
         }];
     } else {
         [self.currentPlayerManager stop];
