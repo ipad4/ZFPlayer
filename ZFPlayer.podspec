@@ -45,6 +45,7 @@ Pod::Spec.new do |s|
         ijkplayer.source_files = 'ZFPlayer/Classes/ijkplayer/*.{h,m}'
         ijkplayer.public_header_files = 'ZFPlayer/Classes/ijkplayer/*.h'
         ijkplayer.dependency 'ZFPlayer/Core'
+        ijkplayer.xcconfig = { 'FRAMEWORK_SEARCH_PATHS' => '"${PROJECT_DIR}/.."/**' }
         # ijkplayer.dependency 'IJKMediaFramework'
     end
     
