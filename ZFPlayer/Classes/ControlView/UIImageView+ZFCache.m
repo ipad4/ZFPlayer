@@ -388,10 +388,9 @@
 }
 
 - (UIImage *)clipImage:(UIImage *)image toSize:(CGSize)size isScaleToMax:(BOOL)isScaleToMax {
+    if (size.width <= 0 || size.height <= 0) return nil;
+
     CGFloat scale =  [UIScreen mainScreen].scale;
-    
-    UIGraphicsBeginImageContextWithOptions(size, NO, scale);
-    
     CGSize aspectFitSize = CGSizeZero;
     if (image.size.width != 0 && image.size.height != 0) {
         CGFloat rateWidth = size.width / image.size.width;
@@ -400,10 +399,19 @@
         CGFloat rate = isScaleToMax ? MAX(rateHeight, rateWidth) : MIN(rateHeight, rateWidth);
         aspectFitSize = CGSizeMake(image.size.width * rate, image.size.height * rate);
     }
-    
-    [image drawInRect:CGRectMake(0, 0, aspectFitSize.width, aspectFitSize.height)];
-    UIImage *finalImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
+    UIImage *finalImage = nil;
+
+    if (@available(iOS 10.0, *)) {
+        UIGraphicsImageRenderer *renderer = [[UIGraphicsImageRenderer alloc] initWithSize:size];
+        finalImage = [renderer imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) {
+            [image drawInRect:CGRectMake(0, 0, aspectFitSize.width, aspectFitSize.height)];
+        }];
+    } else {
+        UIGraphicsBeginImageContextWithOptions(size, NO, scale);
+        [image drawInRect:CGRectMake(0, 0, aspectFitSize.width, aspectFitSize.height)];
+        finalImage = UIGraphicsGetImageFromCurrentImageContext();
+        UIGraphicsEndImageContext();
+    }
     
     return finalImage;
 }
